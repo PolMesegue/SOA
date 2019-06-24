@@ -1,0 +1,16 @@
+Generic POL MESEGUE GRUP 11
+
+3.
+1)How can a memory request be satisfied?
+
+Pots ser satisfeta de manera inmediata si hi ha memoria suficient disponible, pot ser que el kernel control path que ha fet la demanda es bloqueji fins que hi hagi memoria suficient o pot ser que no es satisfaci si no hi ha memoria suficient i el kernel control path està treballant en una interrupció o executan codi de una regió crítica.
+
+
+2)In which situations a memory request will be considered as critical?
+
+Quan s'està fent una interrupció o executant codi d'una regió critica.
+
+3)In a critical memory request, what is the default behavior of the kernel if not
+enough memory is available?
+
+En aquest cas, per defecte la reserva de memoria (allocation) simplement falla. El kernel control path no es bloqueja

@@ -1,0 +1,130 @@
+Exercici 1:
+
+1.a) Haurem de modificar el total_quantum del procés depenent del numero de crides a sistema i afegir dins del struct stats un camp extra que sigui numeroCridesSistema i un altre camp extra que sigui el tick en que s'ha executat l'última crida a sistema -> tickLastSySCALL
+
+Tambe faré servir els ints SumaQuantum i RestaQuantum.
+
+2.b)
+
+Cada cop que es faci una crida a sistema serà necessari mirar el user_ticks i tickLastSysCALL.
+Si son iguals el contador numeroCridesSistema s'incrementa en 1 i si arriba a 4 
+
+Si son diferents i (numeroCridesSistema < 4){ ++RestaQuantum i numeroCridesSistema = 0};
+
+
+Cal modificar el init_task1 per que no posi el defaul quantum, si no que posi el que toca.
+
+2.c)
+
+El quantum el modificaria just quan el procés surt de la cua de ready i es posa a executrar. 
+El codi per posar el nou quantum seria
+Quantum = Quanum + SumaQuantum - RestaQuantum.
+If (Quantum > 5) Quantum = 5;
+if (Quantum < 1) Quantum = 1;
+
+
+
+2.d) no fet
+
+
+Exercici 2:
+
+2.a) El bserver ha de fer les seguents crides a sistema:
+	-socket() per crear i associar el canal.
+	-bind() per associar la direcció i publicar.
+	-listen() per configurar les coneccions.
+	-accept() per esperar la solicituds de conecció
+
+
+
+2.b) El bclient ha de fer les seguents crides a sistema:
+	-socket() per crear i associar el canal.
+	-connect() per solicitar connecció.
+
+
+
+2.c)
+
+while(1) {
+connectionFD = acceptNewConnections (socketFD)
+doService(connectionFD);
+}
+
+doService(int fd) {
+int i = 0;
+char buff[80];
+char buff2[80];
+char nomfitxer[80];
+int ret;
+int socket_fd = (int) fd;
+int fdfitxer;
+
+	ret = read(socket_fd, buff, strlen(buff));
+	fdfitxer = open(buff,O_CREAT|O_TRUNC|O_WRONLY, 0600);
+	
+	while(ret > 0) {
+		
+		ret = read(socket_fd, buff, strlen(buff));
+		
+		ret2 = write(fdfitxer, buff, strlen(buff));
+	}
+	
+}
+//////////////////////////////////////////////////////
+
+2.d)
+int fdfitxer;
+int ret2;
+char buff[1024]
+
+	 fdfitxer = open(argv[3], O_RDWR, 0600);
+	 ret = write (connectionFD, argv[3],strlen(argv[3]));
+	
+	 while ( (ret2 = read(fdfitxer, buff, strlen(buff))) > 0) {
+		write(connectionFD, buff, strlen(buff));	
+
+	}	
+
+
+//////////////////////////////////////////////////
+
+2.e)
+
+En el main caldria un control de fills, per limitar el numero de fills que tenim:
+	int countFills = 0;
+	int maxFills = //el numero maxim de fills que vulguis;
+	
+	if (countFills < maxFills) {
+		doServiceFork(connectionFD);
+		++count;
+	}
+
+Caldrà una crida a sistema signal que ens avisi quan un fil mort, per fer una rutina que decrementi la conta de fills:
+	  signal(SIGCHLD, tracta_sigchld);
+	
+tracta_sigchld() {
+	--countFills;
+}
+
+I cal fer un doServiceFork(), que crei un fill i sigui aquest qui fa el doService original, mentre el pare torna al main:
+
+doServiceFork(int fd) {
+	int pid = fork();
+	if (pid == 0) {
+		doService(fd);
+		exit(0);
+	}
+}
+
+2.f) No he canviat el nom dels fitxers per no perdre temps fent un makefile. Aprofito els fitxers de les entregues.
+Es diuen clientSocket i serverSocket.
+Compilar compila però no m'ha donat temps a executar-lo i provar.
+
+
+
+	
+
+
+  
+
+

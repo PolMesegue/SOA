@@ -1,0 +1,142 @@
+1-
+
+	a) Fitxer Entry.S, linia 107, dins de la funció "system_call_handler".
+	Serveix per a control de errors: si posem a %eax un numero de syscall més gran del que hi ha a la sys_call_table, saltarem a una rutina de error.
+
+
+
+	b) Fitxer sched.c, linia 74, dins de la funció "cpu_idle".
+	Aquesta linia que es assemble en inline, serveix per permetre interrupcions. Això es perquela funció "cpu_idle" es un procés kernel, i per defecte en 80x86, les interrupcions estan desactivades en modo kernel.
+Necessitem permetre explicitament interrupcions perque es pugui interrumpir la rutina "cpu_idle".
+
+
+
+
+	c) Es troba en la direcció lògica 0x00011e40.
+
+	Per trobar-la el primer que he fet ha sigut escriure per terminal $grep -R "general_protection_routine" . 
+	Aquesta comanda m'ha avisat de que la funció "general_protection_routine" es troba dins de "system". 
+	Output del grep ---> Binary file ./system matches
+	
+	Aleshores he fet un $nm system | grep "general_protection_routine" que en el seu output m'ha dit la direcció logica: 00000215 T general_protection_handler
+	
+	La seva direcció física es la mateixa que la lògica, ja que en Zeos les funcions de kernel tenen la mateixa direcció física que lògica.
+	De totes maneres es pot comprovar iniciant el zeos en el bochs ($make emuldbg), fent correr el emulador, pararlo, i executar "info tab". 
+
+	Output del "info tab" (només la linia que ens interessa) que ens confirma el que deia: 
+	0x00001000-0x00014fff -> 0x000000001000-0x000000014fff
+
+
+
+
+2-	El que jo faria es que cada procés tingui un vector de syscalls que cada cop que es crida una "syscall", s'actualitza sumant 1 a la posició corresponent a la syscall. Aleshores a la funció "syscall_number" simplement es retorna aquest vector. Responc a continuació: 
+
+	a) Alguns possibles errors podrien ser:
+	-int size != $MAX_SYSCALL, ja que el vector ha de tenir tanes posicions com syscalls.
+
+	b) s'ha de crear el vector syscalls_proc (per posarli un nom), inicialitzant-lo buit quan es crea el procés (en el PCB) (totes les posicions a 0) i amb "$MAX_SYSCALL" posicons.
+
+	c) S'ha de modificar el PCB (task_struck) per afegir-hi el vector. Ara al "sys_call_handler" cal passar-li també un punter al pcb del procés, per poder trobar facilment el vector syscalls_proc.
+
+	d) Des de "system_call_handler". Abans de fer el "call *sys_call_table(,%eax,4), s'actualitza la posició [%eax*8] del vector syscalls del procés amb un +1.
+
+	e) Entre les linies 108 i 109 de entry.S afegiria ( suposant que tinc en un registre %edi la direccio de memoria del pcb )
+	
+	addl $numeroDeBytesRespecteElPCBonEstaElMeuVector, %edi
+	
+
+	addl $1, 8(%edi, %eax);
+	
+
+	
+	f) 
+
+ENTRY(syscall_number)
+
+	pushl %ebp;
+	movl %esp, %ebp;
+	pushl %ebx;
+
+	movl 8(%ebp), %ebx;
+	movl 12(%ebp), %ecx;
+
+
+	movl $0x10, %eax;
+	
+	pushl %ecx;
+
+			
+
+	pushl %ebp;
+	movl %esp, %ebp;
+	
+	sysenter;
+
+	popl %ebp;
+	popl %ecx;
+	popl %ebx;
+	popl %ebp;
+
+	ret;
+
+
+g) int syscall_number(unsigned long *syscalls, int size) {
+
+	if (size > $MAX_SYCALL) return -1;
+	else {
+		struct task_struct *t = current();
+
+		int i, offset = 8;//offset 8 perque son longs
+		for (i = 0; i < size; ++i) {
+		 syscalls[i+offset] = t->syscall_proc[i+offset];
+		}
+		//no se si funcionaria però en el meu cap és una idea brillant, HIRE ME.
+		return 0;
+	}
+
+h) //NO FET
+
+
+
+
+3- //NO FET
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	  
+
+
+
+	

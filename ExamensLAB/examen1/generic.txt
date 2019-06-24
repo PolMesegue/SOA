@@ -1,0 +1,13 @@
+1- Yes, as the text says in the 3rd line, objects are system resources that two or more
+user-mode processes can share. 
+
+
+2-A security descriptor contains the security information associated with a securable object. A security descriptor consists of a SECURITY_DESCRIPTOR structure and its associated security information
+
+3- 
+Kernel-mode drivers must create at least one device object for each device, with the following exceptions:
+
+    Minidrivers that have an associated class or port driver do not have to create their own device objects. The class or port driver creates the device objects, and dispatches operations to the minidriver.
+
+    Drivers that are part of device type-specific subsystems, such as NDIS miniport drivers, have their device objects created by the subsystem.
+
