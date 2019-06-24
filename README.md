@@ -14,4 +14,4 @@ La mitja de les entreges es 8,5.
 Consell: Per molt malament que vagin els primers exàmens NO DEIXEU D'ANAR A L'EVALUACIO CONTINUA. Encara que sigui a treure un 3. Ja m'ho agraireu.
 Feu SEMPRE els entregables i no els copieu, per malament que estigui. Feu sempre l'exercici de competencia transversal del examen de lab.
 
-Si segiui aquestes 3 normes aprovareu per continua.
+Si seguiu aquestes 3 normes aprovareu per continua.
